@@ -1,0 +1,6 @@
+.sidebar {
+    min-height: 82vh !important;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bs-dark); /* Optional: Ensures consistent dark background */
+}   
