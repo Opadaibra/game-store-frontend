@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Container, Card, Spinner, Button } from 'react-bootstrap';
+import { fetchGameById } from '../../services/GameService';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '../../features/cart/CartSlice';
+import { Cart } from '../cart/Cart';
+
 
 function GameDetail() {
   const { id } = useParams(); // التصحيح هنا
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  
   useEffect(() => {
     const fetchGame = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/games/${id}/`);
-        if (!response.ok) {
-          throw new Error('Game not found');
-        }
-        const data = await response.json();
+        const data = await fetchGameById(id);
         setGame(data);
       } catch (err) {
         setError(err.message);
@@ -28,6 +29,7 @@ function GameDetail() {
       fetchGame();
     }
   }, [id]);
+
 
   if (loading) {
     return (
@@ -55,7 +57,9 @@ function GameDetail() {
   }
 
   return (
+
     <Container className="mt-4">
+      
       <Card>
         <Card.Img variant="top" src={game.main_image_url} />
         <Card.Body>
@@ -66,10 +70,10 @@ function GameDetail() {
             <strong>Platform:</strong> {game.operating_systems}<br />
             <strong>Description:</strong> {game.description}
           </Card.Text>
-          <Button variant="primary">Add to Cart</Button>
+          <Button onClick={() => handleAddToCart(game)} variant="primary" >Add to Cart</Button>
           <Button variant="secondary ms-4" href='/' >
-                Back
-            </Button>
+            Back
+          </Button>
         </Card.Body>
       </Card>
     </Container>

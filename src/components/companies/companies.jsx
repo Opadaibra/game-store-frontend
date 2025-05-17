@@ -4,24 +4,24 @@ import { useState, useEffect } from 'react';
 import {  Row, Col ,Card, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import noimg from '../../assets/noimg.svg';
+import { fetchCompanies } from '../../services/CompaniesService';
 
 export function CompaniesPage() {
-    const [companies, setGames] = useState([]);
+    const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Fetch games from Django API  
-        fetch('http://localhost:8000/api/companies/')
-            .then(response => response.json())
-            .then(data => {
-                setGames(data);
-                console.log(data);
+        const loadCompanies = async () => {
+            try {
+                const data = await fetchCompanies();
+                setCompanies(data);
                 setLoading(false);
-            })
-            .catch(error => {
-                console.error('Error fetching games:', error);
+            } catch (error) {
+                console.error('Error in Company Page:', error);
                 setLoading(false);
-            });
+            }
+        };
+        loadCompanies();
     }, []);
 
     return (

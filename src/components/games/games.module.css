@@ -1,0 +1,7 @@
+.cart_item  {
+    position: fixed;
+    right: 2%;
+    bottom: 1%;
+    z-index: 1;
+    border-radius: 8px;
+}

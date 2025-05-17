@@ -19,8 +19,8 @@ function Layout() {
                             <Nav.Link href="/companies">Companies</Nav.Link>
                         </Nav>
                         <Nav>
-                            <Nav.Link href="/">login</Nav.Link>
-                            <Nav.Link href="/">register</Nav.Link>
+                            <Nav.Link href="/auth/login">login</Nav.Link>
+                            <Nav.Link href="/auth/signup">register</Nav.Link>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

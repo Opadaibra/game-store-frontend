@@ -1,70 +1,75 @@
 
 import { useState, useEffect, } from 'react';
-import { Row, Col, Card, Button } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import noimg from '../../assets/noimg.svg';
-import { Link, NavLink } from 'react-router-dom';
-import { forwardRef } from 'react';
+import { Link } from 'react-router-dom';
+import { fetchGames } from '../../services/GameService';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '../../features/cart/CartSlice';
 export function GamesPage() {
     const [games, setGames] = useState([]);
     const [loading, setLoading] = useState(true);
+    const dispatch = useDispatch();
+    const cart = useSelector((state) => state.cart);
 
+    const handleAddToCart = (game) => {
+        dispatch(addToCart(game));
+    };
     useEffect(() => {
-        // Fetch games from Django API  
-        fetch('http://localhost:8000/api/games/')
-            .then(response => response.json())
-            .then(data => {
+        const loadGames = async () => {
+            try {
+                const data = await fetchGames();
                 setGames(data);
-                console.log(data);
                 setLoading(false);
-            })
-            .catch(error => {
-                console.error('Error fetching games:', error);
+            } catch (error) {
+                console.error('Error in GamesPage:', error);
                 setLoading(false);
-            });
+            }
+        };
+        loadGames();
     }, []);
 
     return (
         <div>
-            <h2>Featured Games</h2>
+            <div class="container mx-auto p-4">
 
-            {loading ? (
-                <div className="text-center">
-                    <div className="spinner-border" role="status">
-                        <span className="visually-hidden">Loading...</span>
+                <h2 class="text-sm md:text-lg xl:text-xl">Featured Games</h2>
+                {loading ? (
+                    <div className="text-center">
+                        <div className="spinner-border" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </div>
                     </div>
-                </div>
-            ) : (
-                <Row className='g-4'>
-                    {games.map((game) => (
-                        <Col key={game.id} sm={6} md={4} lg={4} className="d-flex">
-                            <Card className='flex-fill text-center d-flex align-items-center'>
-                                <Card.Img
-                                    className="card_img"
-                                    variant="center" src={game.main_image_url ?? noimg}
-                                    style={{
-                                        width: game.main_image_url ? '100%' : '80%',
-                                        // Add other conditional styles here
-                                    }}
-                                />
-                                <Card.Body>
-                                    <Card.Title>{game.name}</Card.Title>
-                                    <Card.Text>
-                                        ${game.price}<br />
-                                        {game.company.name}
-                                    </Card.Text>
+                )
+                    : (<div class="grid  sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {games.map((game) => (
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <img src={game.main_image_url ?? noimg} class="w-full h-auto max-w-full" alt="" />
 
-                                    <Button variant="primary">
-                                        <Link to={`/games/${game.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                                            View Details
-                                        </Link>
-                                    </Button>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                    ))}
-                </Row>
-            )}
+                                <h3 class="text-xl font-bold mb-2">{game.name}</h3>
+                                <p>   ${game.price}<br />
+                                    {game.company.name}</p>
+                                <Button variant="success"
+                                    className='me-3'
+                                    onClick={() => handleAddToCart(game)}>
+                                    Cart
+                                </Button>
+                                <Button variant="primary">
+                                    <Link to={`/games/${game.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                        View Details
+                                    </Link>
+                                </Button>
+                            </div>
+
+                        ))}
+                    </div>)}
+            </div>
+            {/* <div className={styles.cart_item}>
+                <Cart />
+
+            </div> */}
+
         </div>
     );
 }
